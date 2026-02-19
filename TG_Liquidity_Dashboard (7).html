@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Target Global — Liquidity Dashboard · Jan 2026</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:#F4F4F2;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;color:#171715;font-size:13px}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-thumb{background:rgba(34,68,207,.25);border-radius:3px}
+button{font-family:inherit;cursor:pointer;border:none;background:none}
+#app{min-height:100vh;padding:28px 32px}
+.header{margin-bottom:20px}
+.header-top{display:flex;align-items:center;gap:14px;margin-bottom:10px}
+.logo-icon{width:36px;height:36px;background:linear-gradient(135deg,#2244CF,#4466EE);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;flex-shrink:0}
+.brand-label{font-size:10px;color:#2244CF;letter-spacing:.12em;text-transform:uppercase}
+.brand-title{font-size:24px;font-weight:800;color:#171715;line-height:1}
+.header-date{margin-left:auto;text-align:right}
+.header-date-label{font-size:10px;color:#8A8A8A}
+.header-date-val{font-size:13px;color:#EC9638;font-weight:700}
+.header-line{height:2px;background:linear-gradient(90deg,#2244CF,transparent);border-radius:1px}
+.nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:24px;padding-bottom:14px;border-bottom:1px solid rgba(0,0,0,.08)}
+.nav-btn{padding:7px 14px;border-radius:8px;border:1px solid rgba(0,0,0,.1);background:rgba(0,0,0,.02);color:#8A8A8A;font-size:12px;font-weight:500;transition:all .18s;white-space:nowrap}
+.nav-btn:hover{background:rgba(34,68,207,.04);color:#2244CF}
+.nav-btn.active{background:rgba(34,68,207,.08);border-color:#2244CF;color:#2244CF;font-weight:700}
+.nav-divider{width:1px;background:rgba(0,0,0,.1);margin:0 2px;align-self:stretch}
+.nav-dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:5px;vertical-align:middle}
+.fund-tag{font-size:9px;opacity:.65;margin-right:3px}
+.card{background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:12px;padding:18px 20px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.grid5{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:18px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.auto-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:14px;margin-bottom:22px}
+.deals-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:12px}
+.metric-card{background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:12px;padding:16px 18px;position:relative;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.metric-card.dim{opacity:.45;box-shadow:none}
+.m-accent{position:absolute;top:0;left:0;width:3px;height:100%;border-radius:12px 0 0 12px}
+.m-label{font-size:9px;color:#5E5E5E;letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px}
+.m-value{font-size:20px;font-weight:800;color:#171715;line-height:1.1}
+.m-sub{font-size:10px;color:#8A8A8A;margin-top:3px}
+.slabel{font-size:9px;color:#5E5E5E;text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid rgba(0,0,0,.08)}
+.badge{display:inline-flex;align-items:center;gap:3px;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;border:1px solid}
+.b-healthy{color:#3C8A50;background:rgba(60,138,80,.1);border-color:rgba(60,138,80,.3)}
+.b-adequate{color:#EC9638;background:rgba(236,150,56,.1);border-color:rgba(236,150,56,.3)}
+.b-shortfall{color:#D47B6B;background:rgba(212,123,107,.12);border-color:rgba(212,123,107,.3)}
+.b-na{color:#8A8A8A;background:rgba(0,0,0,.05);border-color:rgba(0,0,0,.1)}
+.fund-card{background:#fff;border:1px solid rgba(0,0,0,.07);border-radius:14px;padding:18px 20px;cursor:pointer;transition:all .2s;border-left:3px solid #2244CF}
+.fund-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.1);transform:translateY(-1px)}
+.mini-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:10px 0}
+.mini-cell{background:#F4F4F2;border-radius:7px;padding:6px 8px}
+.mini-label{font-size:8px;color:#8A8A8A;text-transform:uppercase}
+.mini-val{font-size:11px;font-weight:700;color:#171715;margin-top:2px}
+.prog-track{height:4px;background:rgba(0,0,0,.07);border-radius:2px;overflow:hidden;margin-top:4px}
+.prog-fill{height:100%;border-radius:2px}
+.deal-card{background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:12px;padding:14px 16px;position:relative;overflow:hidden}
+.deal-top{position:absolute;top:0;left:0;right:0;height:3px;opacity:.75}
+.deal-name{font-size:13px;font-weight:700;color:#171715;margin-bottom:6px}
+.deal-amount{font-size:18px;font-weight:800}
+.deal-note{font-size:10px;color:#8A8A8A;margin-top:4px;line-height:1.4}
+.deals-total{background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:10px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.deals-empty{background:#F8F8F6;border:1px solid rgba(0,0,0,.07);border-radius:12px;padding:20px;text-align:center;color:#AAAAAA;font-size:12px;margin-bottom:18px}
+.rq-card{border-radius:10px;padding:12px 14px;border:1px solid}
+.rq-label{font-size:9px;color:#8A8A8A;text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px}
+.rq-val{font-size:20px;font-weight:800;line-height:1}
+.rw-warn{font-size:10px;color:#D47B6B;margin-top:8px;display:flex;align-items:center;gap:5px}
+.pills{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px;align-items:center}
+.pill-lbl{font-size:9px;color:#8A8A8A;text-transform:uppercase;letter-spacing:.08em;margin-right:4px}
+.pill{padding:5px 13px;border-radius:20px;border:1px solid rgba(0,0,0,.1);background:rgba(0,0,0,.02);color:#8A8A8A;font-size:12px;font-weight:500;transition:all .18s}
+.pill:hover{background:rgba(34,68,207,.06);color:#2244CF}
+.pill.pt{background:rgba(34,68,207,.1);border-color:#2244CF;color:#2244CF;font-weight:700}
+.pill.ps{background:rgba(43,108,176,.1);border-color:#2B6CB0;color:#2B6CB0;font-weight:700}
+.div-row{margin-bottom:12px}
+.div-labels{display:flex;justify-content:space-between;margin-bottom:4px;align-items:center}
+.div-name{display:flex;align-items:center;gap:7px;font-size:12px}
+.div-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+.div-track{display:flex;align-items:center;height:6px;gap:2px}
+.div-half{flex:1;display:flex}
+.div-left{justify-content:flex-end}
+.div-fill{height:6px;border-radius:3px;opacity:.78}
+.div-center{width:2px;height:12px;background:rgba(0,0,0,.15);border-radius:1px}
+.fac-card{background:#fff;border-radius:14px;padding:20px 22px;border:1px solid}
+.fac-type{font-size:9px;text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px;font-weight:700}
+.fac-lender{font-size:13px;font-weight:700;color:#171715}
+.fac-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(0,0,0,.05);font-size:11px}
+.fac-row:last-child{border:none}
+.fac-total{background:rgba(212,123,107,.06);border:1px solid rgba(212,123,107,.2);border-radius:10px;padding:13px 20px;display:flex;justify-content:space-between;align-items:center;margin-top:14px}
+.oblig-row{margin-bottom:13px}
+.oblig-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.oblig-track{height:5px;background:rgba(0,0,0,.07);border-radius:3px;overflow:hidden}
+.oblig-fill{height:100%;background:linear-gradient(90deg,#D47B6B,#D47B6BAA);border-radius:3px}
+.oblig-sub{font-size:9px;color:#8A8A8A;margin-top:2px}
+.oblig-total{border-top:1px solid rgba(0,0,0,.07);padding-top:12px;display:flex;justify-content:space-between;align-items:center;margin-top:4px}
+.pie-wrap{display:flex;align-items:center;gap:16px}
+.leg-item{display:flex;align-items:center;gap:8px;margin-bottom:9px}
+.leg-dot{width:9px;height:9px;border-radius:2px;flex-shrink:0}
+.leg-name{font-size:12px;font-weight:600;color:#171715}
+.leg-sub{font-size:10px;color:#8A8A8A}
+.nsb{display:flex;gap:8px;margin-top:10px}
+.nsb-card{flex:1;background:#F2F2F0;border-radius:8px;padding:8px 10px;border-top:2px solid}
+.nsb-label{font-size:8px;color:#8A8A8A}
+.nsb-val{font-size:12px;font-weight:700;color:#171715;margin-top:2px}
+.bar-chart{width:100%}
+.bc-inner{display:flex;align-items:flex-end;gap:8px;padding:0 4px}
+.bw{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px}
+.bar{width:100%;border-radius:5px 5px 0 0}
+.blbl{font-size:9px;color:#8A8A8A;text-align:center;white-space:nowrap}
+.ylbls{display:flex;flex-direction:column;justify-content:space-between;margin-right:4px;font-size:9px;color:#8A8A8A;text-align:right;min-width:36px}
+.pos{color:#3C8A50}.neg{color:#D47B6B}.blue{color:#2244CF}
+.muted{color:#8A8A8A}.small{font-size:11px}.bold{font-weight:700}.heavy{font-weight:800}
+.txt-right{text-align:right}.txt-center{text-align:center}
+.mt1{margin-top:8px}.mt2{margin-top:16px}.mb1{margin-bottom:8px}.mb2{margin-bottom:16px}
+.footer{text-align:center;font-size:10px;color:#AAAAAA;margin-top:28px;padding-top:14px;border-top:1px solid rgba(0,0,0,.06)}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="header">
+    <div class="header-top">
+      <div class="logo-icon">⬡</div>
+      <div>
+        <div class="brand-label">Target Global</div>
+        <div class="brand-title">Liquidity Dashboard</div>
+      </div>
+      <div class="header-date">
+        <div class="header-date-label">As of</div>
+        <div class="header-date-val">31 January 2026</div>
+      </div>
+    </div>
+    <div class="header-line"></div>
+  </div>
+  <div class="nav" id="nav"></div>
+  <div id="pages"></div>
+  <div class="footer">Target Global Liquidity Summary · Data as of 31 January 2026 · Confidential</div>
+</div>
+<script>
+var FUNDS={ESI:{label:"Early Stage I",currency:"EUR",color:"#2244CF",hasSubFunds:true,subFundOptions:[{key:"total",label:"Total Fund"},{key:"cayman",label:"ESI Cayman"},{key:"exec",label:"ESI Exec"},{key:"parallel",label:"ESI Parallel"}],subFundMap:{total:{label:"Total Fund",currency:"EUR",navDate:"30 Sep 2025",totalCommitments:120000000,capitalCalled:120000000,pctCalled:1.0,nav:388429643,cashAtBank:2158094,outstandingCapCalls:257234,prepaidCapCalls:0,distributions:-1435642,totalCashAvailable:2415328,netLTCapital:-3848963,lifetimeOpex:-1710291,lifetimeMF:-1392772,opexPctCommitment:null,opexPctNAV:null,chartFunds:[{name:"ESI Cayman",commitment:94018161,nav:306261945},{name:"ESI Exec",commitment:9087500,nav:28728553},{name:"ESI Parallel",commitment:16894339,nav:53439145}],deals:[]},cayman:{label:"ESI Cayman",currency:"EUR",navDate:"30 Sep 2025",totalCommitments:94018161,capitalCalled:94018161,pctCalled:1.0,nav:306261945,cashAtBank:1824037,outstandingCapCalls:220193,prepaidCapCalls:0,distributions:-1193019,totalCashAvailable:2044230,netLTCapital:-2251460,lifetimeOpex:-522782,lifetimeMF:-1392772,opexPctCommitment:0.266,opexPctNAV:0.082,chartFunds:null,deals:[]},exec:{label:"ESI Exec",currency:"EUR",navDate:"30 Sep 2025",totalCommitments:9087500,capitalCalled:9087500,pctCalled:1.0,nav:28728553,cashAtBank:235226,outstandingCapCalls:37041,prepaidCapCalls:0,distributions:-24297,totalCashAvailable:272267,netLTCapital:-691860,lifetimeOpex:-626392,lifetimeMF:0,opexPctCommitment:3.201,opexPctNAV:1.012,chartFunds:null,deals:[]},parallel:{label:"ESI Parallel",currency:"EUR",navDate:"30 Sep 2025",totalCommitments:16894339,capitalCalled:16894339,pctCalled:1.0,nav:53439145,cashAtBank:98832,outstandingCapCalls:0,prepaidCapCalls:0,distributions:0,totalCashAvailable:98832,netLTCapital:-905643,lifetimeOpex:-561117,lifetimeMF:0,opexPctCommitment:1.542,opexPctNAV:0.488,chartFunds:null,deals:[]}}},ESII:{label:"Early Stage II",currency:"EUR",color:"#2B6CB0",hasSubFunds:true,subFundOptions:[{key:"total",label:"Total Fund"},{key:"cayman",label:"Cayman Fund"},{key:"german",label:"German Fund"}],subFundMap:{total:{label:"Total Fund",currency:"EUR",navDate:"31 Jan 2026",totalCommitments:120000000,capitalCalled:109050000,pctCalled:0.909,nav:124880291,cashAtBank:2136228,outstandingCapCalls:371950,prepaidCapCalls:-200000,distributions:-281087,totalCashAvailable:2308179,netLTCapital:3178140,lifetimeOpex:0,lifetimeMF:0,opexPctCommitment:null,opexPctNAV:null,chartFunds:[{name:"Cayman",commitment:113692308,nav:118231795},{name:"German",commitment:6307692,nav:6648495}],deals:[]},cayman:{label:"Cayman Fund",currency:"EUR",navDate:"31 Jan 2026",totalCommitments:113692308,capitalCalled:103246923,pctCalled:0.908,nav:118231795,cashAtBank:1887978,outstandingCapCalls:371950,prepaidCapCalls:-184000,distributions:-243270,totalCashAvailable:2075929,netLTCapital:3467236,lifetimeOpex:0,lifetimeMF:0,opexPctCommitment:0.875,opexPctNAV:0.842,chartFunds:null,deals:[]},german:{label:"German Fund",currency:"EUR",navDate:"31 Jan 2026",totalCommitments:6307692,capitalCalled:5803077,pctCalled:0.920,nav:6648495,cashAtBank:248250,outstandingCapCalls:0,prepaidCapCalls:-16000,distributions:-37817,totalCashAvailable:232250,netLTCapital:-289096,lifetimeOpex:0,lifetimeMF:0,opexPctCommitment:3.576,opexPctNAV:3.392,chartFunds:null,deals:[]}}},ESIII:{label:"Early Stage III",currency:"EUR",color:"#3C8A50",hasSubFunds:false,data:{label:"Total Fund",currency:"EUR",navDate:"31 Jan 2026",totalCommitments:159500000,capitalCalled:98890000,pctCalled:0.620,nav:93870261,cashAtBank:8276033,outstandingCapCalls:1333512,prepaidCapCalls:-741020,distributions:0,totalCashAvailable:8868525,netLTCapital:37305045,lifetimeOpex:-4112783,lifetimeMF:-16729200,opexPctCommitment:0.282,opexPctNAV:0.478,chartFunds:null,quarterlyRunway:[{quarter:"Now",label:"Now",closingBalance:8868525,items:[{name:"Current cash available",value:8868525}]},{quarter:"Q1 2026",label:"Q1",closingBalance:742716,items:[{name:"Pipeline Deals*",value:-8050969,note:"Versori + Forsea"},{name:"OPEX Q1",value:-74840}]},{quarter:"Q4 2026",label:"Q4",closingBalance:13487027,items:[{name:"Future Cap Call (10%)",value:15950000},{name:"Q2-Q4 OPEX",value:-336778},{name:"Q2-Q4 MF",value:-2100699}]}],deals:[{name:"Versori",amount:-7550969,status:"pipeline",note:"Not confirmed - included for liquidity exercise"},{name:"Forsea",amount:-500000,status:"pipeline",note:"Not confirmed - included for liquidity exercise"}]}},MOB:{label:"Mobility 2.0",currency:"USD",color:"#EC9638",hasSubFunds:true,subFundOptions:[{key:"total",label:"Total Fund"},{key:"vintage1",label:"Vintage I"},{key:"vintage2",label:"Vintage II"}],subFundMap:{total:{label:"Total Fund",currency:"USD",navDate:"31 Jan 2026",totalCommitments:131500364,capitalCalled:124425000,pctCalled:0.946,nav:124461775,cashAtBank:1508657,outstandingCapCalls:0,prepaidCapCalls:-46800,distributions:0,totalCashAvailable:1461857,netLTCapital:1676461,lifetimeOpex:-809486,lifetimeMF:-2506901,opexPctCommitment:0.221,opexPctNAV:0.233,chartFunds:[{name:"Vintage I",commitment:83702182,nav:79520816},{name:"Vintage II",commitment:47798182,nav:44940959}],quarterlyRunway:[{quarter:"Now",label:"Now",closingBalance:1461857,items:[{name:"Current cash available",value:1461857}]},{quarter:"Q1 2026",label:"Q1",closingBalance:2324441,items:[{name:"V2 Cap Call (5%)",value:2277109},{name:"Zego (V2)",value:-1350000},{name:"OPEX",value:-64525}]},{quarter:"Q4 2026",label:"Q4",closingBalance:1657208,items:[{name:"Q2-Q4 OPEX",value:-290360},{name:"Q2-Q4 MF (V2)",value:-376873}]}],deals:[{name:"Zego",amount:-1350000,status:"q1",note:"Vintage II - Q1 2026"},{name:"Flink Series C",amount:-4403385,status:"current",note:"V1: $1.0M, V2: $3.4M (after reallocation)"}]},vintage1:{label:"Vintage I",currency:"USD",navDate:"31 Jan 2026",totalCommitments:83702182,capitalCalled:83702182,pctCalled:1.0,nav:79520816,cashAtBank:-1997094,outstandingCapCalls:0,prepaidCapCalls:0,distributions:0,totalCashAvailable:-1997094,netLTCapital:-2440513,lifetimeOpex:-515251,lifetimeMF:-1505106,opexPctCommitment:0.221,opexPctNAV:0.232,chartFunds:null,quarterlyRunway:[{quarter:"Now",label:"Now",closingBalance:-1997094,items:[{name:"Current cash available",value:-1997094}]},{quarter:"Q1 2026",label:"Q1",closingBalance:-235337,items:[{name:"Flink realloc (in)",value:1802828},{name:"OPEX",value:-41071}]},{quarter:"Q4 2026",label:"Q4",closingBalance:-420156,items:[{name:"Q2-Q4 OPEX",value:-184819}]}],deals:[{name:"Flink Series C",amount:-1000000,status:"current",note:"Reallocated (was $2.8M to $1.0M)"}]},vintage2:{label:"Vintage II",currency:"USD",navDate:"31 Jan 2026",totalCommitments:47798182,capitalCalled:45703327,pctCalled:0.9564,nav:44940959,cashAtBank:3505751,outstandingCapCalls:0,prepaidCapCalls:-46800,distributions:0,totalCashAvailable:3458951,netLTCapital:2766974,lifetimeOpex:-294235,lifetimeMF:-1001796,opexPctCommitment:0.221,opexPctNAV:0.235,chartFunds:null,quarterlyRunway:[{quarter:"Now",label:"Now",closingBalance:3458951,items:[{name:"Current cash available",value:3458951}]},{quarter:"Q1 2026",label:"Q1",closingBalance:2559778,items:[{name:"Cap Call (5%)",value:2277109},{name:"Zego investment",value:-1350000},{name:"Flink realloc (out)",value:-1802828},{name:"OPEX",value:-23454}]},{quarter:"Q4 2026",label:"Q4",closingBalance:2077364,items:[{name:"Q2-Q4 OPEX",value:-105541},{name:"Q2-Q4 MF",value:-376873}]}],dealsInherit:true,deals:[{name:"Zego",amount:-1350000,status:"q1",note:"Q1 2026 investment"},{name:"Flink Series C",amount:-3403385,status:"current",note:"Reallocated (was $1.6M to $3.4M)"}]}}},GFII:{label:"Growth Fund II",currency:"EUR",color:"#D47B6B",hasSubFunds:false,data:{label:"Total Fund",currency:"EUR",navDate:"31 Jan 2026",totalCommitments:512550000,capitalCalled:481797000,pctCalled:0.940,nav:null,cashAtBank:5865157,outstandingCapCalls:3696064,prepaidCapCalls:-2801146,distributions:-2466819,totalCashAvailable:4293256,netLTCapital:15755536,lifetimeOpex:-20275550,lifetimeMF:-995883,opexPctCommitment:null,opexPctNAV:null,chartFunds:null,quarterlyRunway:[{quarter:"Now",label:"Now",closingBalance:4293256,items:[{name:"Current cash available",value:4293256}]},{quarter:"Q1 2026",label:"Q1",closingBalance:14387375,items:[{name:"Cap Call #20 (4%)",value:20382000},{name:"New Deals (4 cos.)",value:-7625000},{name:"Admin Fees",value:-2029734},{name:"Management Fees",value:-125938},{name:"OPEX",value:-507209}]},{quarter:"Q4 2026",label:"Q4",closingBalance:5777966,items:[{name:"Q2-Q4 Admin Fees",value:-6201916},{name:"Q2-Q4 Mgmt Fees",value:-125054},{name:"Q2-Q4 OPEX",value:-2282439}]}],deals:[{name:"Lepaya",amount:-1625000,status:"paid",note:"1st tranche - paid"},{name:"Luca",amount:-1000000,status:"q1",note:"Q1 2026"},{name:"Elopage (Ablefy)",amount:-4000000,status:"q1",note:"Q1 2026"},{name:"Symmetrical",amount:-1000000,status:"q1",note:"Q1 2026"}]}},TGEP:{label:"TG Equity Partners",currency:"EUR",color:"#129999",hasSubFunds:false,isTGEP:true,data:{label:"Total Fund",currency:"EUR",navDate:"31 Jan 2026",totalCommitments:null,capitalCalled:null,pctCalled:null,nav:null,cashAtBank:1482862,totalCashAvailable:1482862,netLTCapital:-32171072,fxRateEUR:1.1919,ltShortfall:-32171072,quarterlyRunway:[{quarter:"Q1 2026",label:"Q1",closingBalance:1171810,items:[{name:"Fees & Expenses",value:-119814},{name:"TGSO OPEX CC",value:-191238}]},{quarter:"Q2 2026",label:"Q2",closingBalance:-5054663,items:[{name:"Management Fees",value:-1306659},{name:"Fees & Expenses",value:-119814},{name:"GFII Cap Call (4%)",value:-4800000}]},{quarter:"Q3 2026",label:"Q3",closingBalance:-6501849,items:[{name:"Management Fees",value:-1327373},{name:"Fees & Expenses",value:-119814}]},{quarter:"Q4 2026",label:"Q4",closingBalance:-10349036,items:[{name:"Management Fees",value:-1327373},{name:"Fees & Expenses",value:-119814},{name:"ESII Cap Call (4%)",value:-600000},{name:"ESIII Cap Call (10%)",value:-1800000}]}],capitalCallObligations:[{fund:"ESII Cayman",amount:-600000,pct:"4%"},{fund:"ESIII Cayman",amount:-5040000,pct:"10%"},{fund:"GFII",amount:-16182036,pct:null}],facility:{senior:{lender:"Crestline & SLS Partners Fund I LP",principal:64000000,capitalizedPrincipal:70780974,fees:[{name:"Facility Fee (2% of loan)",value:-1280000},{name:"Additional Facility Fee (0.5%)",value:-320000},{name:"Administration Fee",value:-50000},{name:"Senior Lender Costs",value:-38726}]},major:{lender:"Cohort Lendco IV Ltd",principal:14000000,actualWire:13860000,targetReturn:28000000,targetIRR:16264197,target2x:28000000,fees:[{name:"Cohort Facility Fee (1%)",value:-140000}]},totalLiability:98780974,remainingAggregateReturn:96952248}}}};
+
+var FUND_KEYS=["ESI","ESII","ESIII","MOB","GFII","TGEP"];
+var PIE_COLORS=["#2244CF","#2B6CB0","#3C8A50","#D47B6B","#EC9638","#129999"];
+var STATUS_META={paid:{label:"Paid",color:"#3C8A50",bg:"rgba(60,138,80,.1)",border:"rgba(60,138,80,.3)"},q1:{label:"Q1 2026",color:"#2244CF",bg:"rgba(34,68,207,.08)",border:"rgba(34,68,207,.3)"},current:{label:"Current",color:"#2B6CB0",bg:"rgba(43,108,176,.1)",border:"rgba(43,108,176,.3)"},pipeline:{label:"Pipeline",color:"#EC9638",bg:"rgba(236,150,56,.1)",border:"rgba(236,150,56,.3)"}};
+var subState={};
+var page="overview";
+
+function fmt(v,c){if(v===null||v===undefined)return"N/A";var a=Math.abs(v),s=v<0?"-":"";if(a>=1e9)return s+c+" "+(a/1e9).toFixed(2)+"B";if(a>=1e6)return s+c+" "+(a/1e6).toFixed(2)+"M";if(a>=1e3)return s+c+" "+(a/1e3).toFixed(1)+"k";return s+c+" "+a.toFixed(0);}
+function fmtS(v){if(v===null||v===undefined)return"N/A";var a=Math.abs(v),s=v<0?"-":"";if(a>=1e9)return s+(a/1e9).toFixed(1)+"B";if(a>=1e6)return s+(a/1e6).toFixed(1)+"M";if(a>=1e3)return s+(a/1e3).toFixed(0)+"k";return s+a.toFixed(0);}
+function fmtP(v){return(v!==null&&v!==undefined)?v.toFixed(2)+"%":"N/A";}
+function liqStatus(d){if(d.netLTCapital===null)return{label:"N/A",cls:"b-na"};if(d.netLTCapital>=5e6)return{label:"Healthy",cls:"b-healthy"};if(d.netLTCapital>=0)return{label:"Adequate",cls:"b-adequate"};return{label:"Shortfall",cls:"b-shortfall"};}
+
+function MC(label,val,color,sub,dim){return'<div class="metric-card'+(dim?' dim':'')+'"><div class="m-accent" style="background:'+color+'"></div><div class="m-label">'+label+'</div><div class="m-value">'+val+'</div>'+(sub?'<div class="m-sub">'+sub+'</div>':'')+'</div>';}
+function SB(val,cur,sm){var pos=val>0,arr=pos?"&#9650;":"&#9660;",cls=pos?"b-healthy":"b-shortfall",sz=sm?"font-size:10px;padding:2px 8px":"";return'<span class="badge '+cls+'" style="'+sz+'">'+arr+' '+fmt(Math.abs(val),cur)+' '+(pos?'capacity':'shortfall')+'</span>';}
+function SL(txt){return'<div class="slabel">'+txt+'</div>';}
+
+function svgPie(slices,sz){sz=sz||130;var cx=sz/2,cy=sz/2,r=sz*.46,ri=sz*.27,total=0,angle=-Math.PI/2,paths="";for(var i=0;i<slices.length;i++)total+=slices[i];for(var i=0;i<slices.length;i++){var a=slices[i]/total*Math.PI*2,x1=cx+r*Math.cos(angle),y1=cy+r*Math.sin(angle),x2=cx+r*Math.cos(angle+a),y2=cy+r*Math.sin(angle+a),xi1=cx+ri*Math.cos(angle),yi1=cy+ri*Math.sin(angle),xi2=cx+ri*Math.cos(angle+a),yi2=cy+ri*Math.sin(angle+a),lg=a>Math.PI?1:0,d="M"+x1+","+y1+" A"+r+","+r+",0,"+lg+",1,"+x2+","+y2+" L"+xi2+","+yi2+" A"+ri+","+ri+",0,"+lg+",0,"+xi1+","+yi1+" Z";paths+='<path d="'+d+'" fill="'+PIE_COLORS[i%PIE_COLORS.length]+'" opacity=".88"/>';angle+=a;}return'<svg width="'+sz+'" height="'+sz+'" viewBox="0 0 '+sz+' '+sz+'">'+paths+'</svg>';}
+
+function barChart(bars,h){
+  h=h||160;
+  var vals=bars.map(function(b){return b.value;});
+  var max=Math.max.apply(null,vals.map(Math.abs).concat([1]));
+  var hasNeg=vals.some(function(v){return v<0;});
+  var posH=hasNeg?Math.floor(h*0.48):h-20;
+  var negH=hasNeg?Math.floor(h*0.48):0;
+  var bHtml=bars.map(function(b){
+    var pos=b.value>=0;
+    var col=b.highlight?"#2244CF":pos?"#3C8A50":"#D47B6B";
+    if(b.colorOverride)col=b.colorOverride;
+    var barPx=Math.max(4,Math.round(Math.abs(b.value)/max*(pos?posH:negH)));
+    return '<div class="bw" style="justify-content:flex-end;height:'+(h-20)+'px;position:relative">'
+      +'<div style="position:absolute;bottom:'+(hasNeg?negH+4:0)+'px;left:0;right:0;display:flex;justify-content:center">'
+      +'<div style="width:80%;background:'+col+';opacity:'+(b.highlight?1:.82)+';height:'+(pos?barPx:0)+'px;min-height:'+(pos&&b.value!==0?4:0)+'px;border-radius:4px 4px 0 0"></div></div>'
+      +(hasNeg?'<div style="position:absolute;bottom:0;left:0;right:0;display:flex;justify-content:center">'
+      +'<div style="width:80%;background:#D47B6B;opacity:.82;height:'+(!pos?barPx:0)+'px;min-height:'+(!pos&&b.value!==0?4:0)+'px;border-radius:0 0 4px 4px"></div></div>'
+      +'<div style="position:absolute;bottom:'+negH+'px;left:0;right:0;height:1px;background:rgba(0,0,0,.1)"></div>':'')
+      +'<div class="blbl" style="position:absolute;bottom:-18px;width:100%">'+b.name+'</div>'
+      +'</div>';
+  }).join('');
+  var yTop=fmtS(max),yMid=fmtS(hasNeg?0:max*.5),yBot=hasNeg?fmtS(-max):"0";
+  return '<div style="display:flex;padding-bottom:20px"><div class="ylbls" style="height:'+h+'px"><span>'+yTop+'</span><span>'+yMid+'</span><span>'+yBot+'</span></div>'
+    +'<div style="display:flex;align-items:flex-end;gap:8px;height:'+h+'px;flex:1;padding:0 4px">'+bHtml+'</div></div>';
+}
+
+function runwayChart(rw,h){
+  h=h||160;
+  var vals=rw.map(function(q){return q.closingBalance;});
+  var max=Math.max.apply(null,vals.map(Math.abs).concat([1]));
+  var hasNeg=vals.some(function(v){return v<0;});
+  var posH=hasNeg?Math.floor(h*0.48):h-20;
+  var negH=hasNeg?Math.floor(h*0.48):0;
+  var bHtml=rw.map(function(q){
+    var pos=q.closingBalance>=0,col=pos?"#3C8A50":"#D47B6B";
+    var barPx=Math.max(4,Math.round(Math.abs(q.closingBalance)/max*(pos?posH:negH)));
+    var tip=q.quarter+" | Closing: "+fmtS(q.closingBalance);
+    return '<div class="bw" title="'+tip+'" style="position:relative;height:'+(h-20)+'px">'
+      +'<div style="position:absolute;bottom:'+(hasNeg?negH+4:0)+'px;left:0;right:0;display:flex;justify-content:center">'
+      +'<div style="width:80%;background:'+col+';opacity:.82;height:'+(pos?barPx:0)+'px;min-height:'+(pos?4:0)+'px;border-radius:4px 4px 0 0"></div></div>'
+      +(hasNeg?'<div style="position:absolute;bottom:0;left:0;right:0;display:flex;justify-content:center">'
+      +'<div style="width:80%;background:'+col+';opacity:.82;height:'+(!pos?barPx:0)+'px;min-height:'+(!pos?4:0)+'px;border-radius:0 0 4px 4px"></div></div>'
+      +'<div style="position:absolute;bottom:'+negH+'px;left:0;right:0;height:1px;background:rgba(0,0,0,.1)"></div>':'')
+      +'<div class="blbl" style="position:absolute;bottom:-18px;width:100%">'+q.label+'</div>'
+      +'</div>';
+  }).join('');
+  var yTop=fmtS(max),yMid=hasNeg?"0":fmtS(max*.5),yBot=hasNeg?fmtS(-max):"0";
+  return '<div style="display:flex;padding-bottom:20px"><div class="ylbls" style="height:'+h+'px"><span>'+yTop+'</span><span>'+yMid+'</span><span>'+yBot+'</span></div>'
+    +'<div style="display:flex;align-items:flex-end;gap:8px;height:'+h+'px;flex:1;padding:0 4px">'+bHtml+'</div></div>';
+}
+
+function dealsHTML(deals,cur){if(!deals)return"";var html=SL("New Deals &amp; Pipeline");if(!deals.length)return html+'<div class="deals-empty">No new deals or pipeline activity for this period</div>';var total=deals.reduce(function(s,d){return s+d.amount;},0);var cards=deals.map(function(deal){var st=STATUS_META[deal.status]||STATUS_META.q1;return'<div class="deal-card"><div class="deal-top" style="background:'+st.color+'"></div><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px"><div class="deal-name">'+deal.name+'</div><span class="badge" style="color:'+st.color+';background:'+st.bg+';border-color:'+st.border+';font-size:9px;padding:2px 8px;margin-left:6px;flex-shrink:0">'+st.label+'</span></div><div class="deal-amount" style="color:'+(deal.amount<0?"#D47B6B":"#3C8A50")+'">'+fmt(deal.amount,cur)+'</div>'+(deal.note?'<div class="deal-note">'+deal.note+'</div>':'')+'</div>';}).join('');return html+'<div class="deals-grid">'+cards+'</div><div class="deals-total"><div><div style="font-size:10px;color:#5E5E5E;text-transform:uppercase;letter-spacing:.07em">Total Capital Deployed / Committed</div><div class="small muted mt1">'+deals.length+' deal'+(deals.length!==1?'s':'')+'</div></div><div style="font-size:20px;font-weight:800;color:#D47B6B">'+fmt(total,cur)+'</div></div>';}
+
+function runwayHTML(rw,cur){if(!rw||!rw.length)return"";var anyNeg=rw.some(function(q){return q.closingBalance<0;});var cards=rw.map(function(q){var pos=q.closingBalance>=0;return'<div class="rq-card" style="background:'+(pos?"rgba(60,138,80,.07)":"rgba(212,123,107,.07)")+';border-color:'+(pos?"rgba(60,138,80,.2)":"rgba(212,123,107,.2)")+'"><div class="rq-label">'+q.quarter+'</div><div class="rq-val" style="color:'+(pos?"#3C8A50":"#D47B6B")+'">'+fmtS(q.closingBalance)+'</div></div>';}).join('');return SL("Quarterly Cash Runway 2026")+'<div style="display:grid;grid-template-columns:1.5fr 1fr;gap:14px;margin-bottom:18px"><div class="card" style="padding:16px 18px">'+runwayChart(rw)+(anyNeg?'<div class="rw-warn"><span>&#9888;</span> Cash turns negative - hover bars for detail</div>':'')+'</div><div style="display:flex;flex-direction:column;gap:8px">'+cards+'</div></div>';}
+
+function renderOverview(){var rows=FUND_KEYS.map(function(k){var f=FUNDS[k],d=f.hasSubFunds?f.subFundMap.total:f.data;return Object.assign({key:k,label:f.label,currency:f.currency,color:f.color},d);});var shortfalls=rows.filter(function(f){return f.netLTCapital!==null&&f.netLTCapital<0;}).length;var ok=rows.filter(function(f){return f.netLTCapital!==null&&f.netLTCapital>=0;}).length;
+var strip='<div class="grid3" style="margin-bottom:22px">'+[["Funds Tracked",rows.length,"#2244CF"],["Liquidity Shortfalls",shortfalls,"#D47B6B"],["Healthy / Adequate",ok,"#3C8A50"]].map(function(x){return'<div class="card txt-center"><div class="slabel" style="border:none;padding:0;margin-bottom:8px">'+x[0]+'</div><div style="font-size:40px;font-weight:800;color:'+x[2]+'">'+x[1]+'</div></div>';}).join('')+'</div>';
+var fcards='<div class="slabel">Fund Liquidity Status — Click to drill in</div><div class="auto-grid">'+rows.map(function(f){var st=liqStatus(f),pw=f.pctCalled?Math.min(f.pctCalled*100,100):0;return'<div class="fund-card" style="border-left-color:'+f.color+'" onclick="go(\''+f.key+'\')"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px"><div><div style="font-size:9px;color:'+f.color+';text-transform:uppercase;letter-spacing:.1em;margin-bottom:1px">'+f.key+'</div><div style="font-size:15px;font-weight:800">'+f.label+'</div><div class="small muted mt1">'+f.currency+' - 31 Jan 2026</div></div><span class="badge '+st.cls+'">'+st.label+'</span></div><div class="mini-grid"><div class="mini-cell"><div class="mini-label">Commitments</div><div class="mini-val">'+fmtS(f.totalCommitments)+'</div></div><div class="mini-cell"><div class="mini-label">Cash Avail.</div><div class="mini-val">'+fmtS(f.totalCashAvailable)+'</div></div><div class="mini-cell"><div class="mini-label">NAV</div><div class="mini-val">'+(f.nav?fmtS(f.nav):"N/A")+'</div></div></div><div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;margin-bottom:3px"><span class="small muted">Capital Called</span><span class="small muted">'+(f.pctCalled!==null?fmtP(f.pctCalled*100):"N/A")+'</span></div><div class="prog-track"><div class="prog-fill" style="width:'+pw+'%;background:'+f.color+'"></div></div></div><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:9px;color:#8A8A8A;text-transform:uppercase;letter-spacing:.05em">Net LT Capital</span>'+(f.netLTCapital!==null?SB(f.netLTCapital,f.currency,true):'<span class="small muted">N/A</span>')+'</div><div style="text-align:right;font-size:10px;color:#AAAAAA;margin-top:8px">Drill in &rarr;</div></div>';}).join('')+'</div>';
+var cashMax=Math.max.apply(null,rows.filter(function(r){return r.key!=="TGEP";}).map(function(r){return Math.abs(r.totalCashAvailable);}));var cashH=150;var cbars=rows.filter(function(r){return r.key!=="TGEP";}).map(function(r){var barPx=Math.max(4,Math.round(Math.abs(r.totalCashAvailable)/cashMax*(cashH-20)));return'<div class="bw" style="position:relative;height:'+(cashH-20)+'px"><div style="position:absolute;bottom:0;left:0;right:0;display:flex;justify-content:center"><div style="width:80%;background:'+r.color+';opacity:.82;height:'+barPx+'px;border-radius:4px 4px 0 0" title="'+fmt(r.totalCashAvailable,r.currency)+'"></div></div><div class="blbl" style="position:absolute;bottom:-18px;width:100%">'+r.key+'</div></div>';}).join('');var cashChart=SL("Total Cash Available by Fund (excl. TGEP)")+'<div class="card mb2" style="padding:16px 18px"><div style="display:flex;padding-bottom:20px"><div class="ylbls" style="height:'+cashH+'px"><span>'+fmtS(cashMax)+'</span><span>'+fmtS(cashMax*.5)+'</span><span>0</span></div><div style="display:flex;align-items:flex-end;gap:8px;height:'+cashH+'px;flex:1;padding:0 4px">'+cbars+'</div></div></div>';
+var MAX_D=40000000;var divRows=rows.filter(function(r){return r.netLTCapital!==null;}).map(function(r){var pos=r.netLTCapital>0,pct=Math.min(Math.abs(r.netLTCapital)/MAX_D*100,100);return'<div class="div-row"><div class="div-labels"><div class="div-name"><div class="div-dot" style="background:'+r.color+'"></div>'+r.label+'</div><span style="font-size:12px;font-weight:700;color:'+(pos?"#3C8A50":"#D47B6B")+'">'+(pos?"+":"")+fmt(r.netLTCapital,r.currency)+'</span></div><div class="div-track"><div class="div-half div-left"><div class="div-fill" style="width:'+(pos?0:pct)+'%;background:#D47B6B;border-radius:0 3px 3px 0"></div></div><div class="div-center"></div><div class="div-half"><div class="div-fill" style="width:'+(pos?pct:0)+'%;background:#3C8A50;border-radius:3px 0 0 3px"></div></div></div></div>';}).join('');var divChart=SL("Net LT Capital to Deploy — All Funds")+'<div class="card" style="padding:20px 24px">'+divRows+'<div style="text-align:center;font-size:9px;color:#AAAAAA;margin-top:8px">&larr; shortfall &nbsp;|&nbsp; capacity &rarr;</div></div>';
+return strip+fcards+cashChart+divChart;}
+
+function renderFund(fk){var f=FUNDS[fk];if(f.isTGEP)return renderTGEP();var sk=subState[fk]||"total",d=f.hasSubFunds?f.subFundMap[sk]:f.data,deals=d.deals!==undefined?d.deals:(f.hasSubFunds?f.subFundMap.total.deals:null),rw=d.quarterlyRunway||null,st=liqStatus(d);
+var pills="";if(f.hasSubFunds){pills='<div class="pills"><span class="pill-lbl">Sub-fund:</span>'+f.subFundOptions.map(function(o){var isT=o.key==="total",active=sk===o.key,cls=active?(isT?"pill pt":"pill ps"):"pill";return'<button class="'+cls+'" onclick="setSub(\''+fk+'\',\''+o.key+'\')">'+(isT?"&sum; ":"")+o.label+'</button>';}).join('')+'</div>';}
+var title='<div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap"><div style="font-size:20px;font-weight:800">'+f.label+(f.hasSubFunds&&sk!=="total"?' <span style="color:#2B6CB0;font-size:15px">- '+d.label+'</span>':'')+'</div><div style="font-size:11px;color:#8A8A8A;background:rgba(0,0,0,.04);border-radius:6px;padding:3px 10px">'+d.currency+' - NAV as of '+d.navDate+'</div>'+(d.netLTCapital!==null?'<div style="margin-left:auto">'+SB(d.netLTCapital,d.currency)+'</div>':'')+'</div>';
+var cs=SL("Capital Structure")+'<div class="grid3">'+MC("Total Commitments",d.totalCommitments?fmt(d.totalCommitments,d.currency):"N/A","#2B6CB0",null,!d.totalCommitments)+MC("Capital Called",d.capitalCalled?fmt(d.capitalCalled,d.currency):"N/A","#EC9638",d.pctCalled?fmtP(d.pctCalled*100)+" called":null,!d.capitalCalled)+MC("NAV",d.nav?fmt(d.nav,d.currency):"N/A","#2244CF","as of "+d.navDate,!d.nav)+'</div>';
+var liq=SL("Current Liquidity")+'<div class="grid4">'+MC("Cash at Bank",fmt(d.cashAtBank,d.currency),"#3C8A50")+MC("Outstanding Cap Calls",d.outstandingCapCalls>0?fmt(d.outstandingCapCalls,d.currency):"—","#D47B6B",null,!d.outstandingCapCalls)+MC("Prepaid Cap Calls",d.prepaidCapCalls&&d.prepaidCapCalls!==0?fmt(d.prepaidCapCalls,d.currency):"—","#EC9638",null,!d.prepaidCapCalls)+MC("Total Cash Available",fmt(d.totalCashAvailable,d.currency),"#2244CF")+'</div>';
+var lt=SL("Long-Term Outlook")+'<div class="grid5">'+MC("Net LT Capital",d.netLTCapital!==null?fmt(d.netLTCapital,d.currency):"N/A",d.netLTCapital>0?"#3C8A50":"#D47B6B",null,d.netLTCapital===null)+MC("Lifetime OPEX",d.lifetimeOpex?fmt(d.lifetimeOpex,d.currency):"—","#D47B6B",null,!d.lifetimeOpex)+MC("Lifetime MF",d.lifetimeMF?fmt(d.lifetimeMF,d.currency):"—","#D47B6B",null,!d.lifetimeMF)+MC("OPEX % Commitment",fmtP(d.opexPctCommitment),"#8A8A8A",null,d.opexPctCommitment===null)+MC("OPEX % NAV",fmtP(d.opexPctNAV),"#8A8A8A",null,d.opexPctNAV===null)+'</div>';
+var cbars=[{name:"Cash at Bank",value:d.cashAtBank}];if(d.outstandingCapCalls>0)cbars.push({name:"Cap Calls Due",value:d.outstandingCapCalls});if(d.prepaidCapCalls&&d.prepaidCapCalls!==0)cbars.push({name:"Prepaid Calls",value:d.prepaidCapCalls});if(d.distributions&&d.distributions!==0)cbars.push({name:"Distributions",value:d.distributions});cbars.push({name:"Total Avail.",value:d.totalCashAvailable,highlight:true});
+var charts='<div style="display:grid;grid-template-columns:'+(d.chartFunds?"1fr 1fr":"1fr")+';gap:16px"><div class="card" style="padding:16px 18px">'+SL("Cash Position Breakdown")+barChart(cbars)+'</div>';
+if(d.chartFunds){var tot=d.chartFunds.reduce(function(s,x){return s+x.commitment;},0);charts+='<div class="card" style="padding:16px 18px">'+SL("Commitment Allocation")+'<div class="pie-wrap">'+svgPie(d.chartFunds.map(function(sf){return sf.commitment;}))+' <div>'+d.chartFunds.map(function(sf,i){return'<div class="leg-item"><div class="leg-dot" style="background:'+PIE_COLORS[i%PIE_COLORS.length]+'"></div><div><div class="leg-name">'+sf.name+'</div><div class="leg-sub">'+fmt(sf.commitment,d.currency)+' - '+((sf.commitment/tot)*100).toFixed(1)+'%</div></div></div>';}).join('')+'</div></div><div style="border-top:1px solid rgba(0,0,0,.06);padding-top:10px;margin-top:8px"><div class="small muted mb1">NAV by Sub-Fund</div><div class="nsb">'+d.chartFunds.map(function(sf,i){return'<div class="nsb-card" style="border-top-color:'+PIE_COLORS[i%PIE_COLORS.length]+'"><div class="nsb-label">'+sf.name+'</div><div class="nsb-val">'+fmt(sf.nav,d.currency)+'</div></div>';}).join('')+'</div></div></div>';}
+charts+='</div>';
+return pills+title+(deals&&deals.length?'<div style="margin-bottom:18px">'+dealsHTML(deals,d.currency)+'</div>':'<div class="deals-empty mb2">No new deals or pipeline activity for this period</div>')+cs+liq+lt+runwayHTML(rw,d.currency)+charts;}
+
+function renderTGEP(){var d=FUNDS.TGEP.data,f=d.facility,rw=d.quarterlyRunway,ob=d.capitalCallObligations,totOb=ob.reduce(function(s,c){return s+c.amount;},0),cur="EUR";
+var title='<div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap"><div style="font-size:20px;font-weight:800">TG Equity Partners</div><div style="font-size:11px;color:#8A8A8A;background:rgba(0,0,0,.04);border-radius:6px;padding:3px 10px">'+cur+' - FX EUR/USD '+d.fxRateEUR+'</div><div style="margin-left:auto"><span class="badge b-shortfall">&#9660; '+fmt(Math.abs(d.ltShortfall),cur)+' LT shortfall</span></div></div>';
+var pos=SL("Position Summary")+'<div class="grid4" style="margin-bottom:18px">'+MC("Cash at Bank",fmt(d.cashAtBank,cur),"#3C8A50")+MC("LT Cash Shortfall",fmt(d.ltShortfall,cur),"#D47B6B","excl. MF/OPEX after 2026")+MC("Total Debt Liability",fmt(f.totalLiability,cur),"#D47B6B")+MC("Remaining Agg. Return",fmt(f.remainingAggregateReturn,cur),"#EC9638","to service")+'</div>';
+var qcards=rw.map(function(q){var p=q.closingBalance>=0;return'<div class="rq-card" style="background:'+(p?"rgba(60,138,80,.07)":"rgba(212,123,107,.07)")+';border-color:'+(p?"rgba(60,138,80,.2)":"rgba(212,123,107,.2)")+'"><div class="rq-label">'+q.quarter+'</div><div class="rq-val" style="color:'+(p?"#3C8A50":"#D47B6B")+'">'+fmtS(q.closingBalance)+'</div></div>';}).join('');
+var rwSection=SL("Quarterly Cash Runway 2026")+'<div style="display:grid;grid-template-columns:1.4fr 1fr;gap:16px;margin-bottom:18px"><div class="card" style="padding:16px 18px">'+runwayChart(rw)+'<div class="rw-warn"><span>&#9888;</span> Cash turns negative in Q2 2026 - driven by GFII cap call (4.8M EUR)</div><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px">'+qcards+'</div></div><div class="card" style="padding:16px 18px">'+SL("Capital Call Obligations")+ob.map(function(c){var pct=Math.abs(c.amount)/Math.abs(totOb)*100;return'<div class="oblig-row"><div class="oblig-hdr"><div><span style="font-size:12px;font-weight:600">'+c.fund+'</span>'+(c.pct?'<span style="font-size:9px;color:#8A8A8A;background:rgba(0,0,0,.05);border-radius:4px;padding:1px 6px;margin-left:6px">'+c.pct+' call</span>':'')+'</div><span style="font-size:12px;font-weight:700;color:#D47B6B">'+fmt(c.amount,cur)+'</span></div><div class="oblig-track"><div class="oblig-fill" style="width:'+pct+'%"></div></div><div class="oblig-sub">'+pct.toFixed(1)+'% of total obligations</div></div>';}).join('')+'<div class="oblig-total"><span style="font-size:10px;color:#5E5E5E;text-transform:uppercase;letter-spacing:.06em">Total Obligations</span><span style="font-size:16px;font-weight:800;color:#D47B6B">'+fmt(totOb,cur)+'</span></div></div></div>';
+var sfees=f.senior.fees.map(function(fee){return'<div class="fac-row"><span class="muted">'+fee.name+'</span><span style="font-weight:600;color:#D47B6B">'+fmt(fee.value,cur)+'</span></div>';}).join('');var mfees=f.major.fees.map(function(fee){return'<div class="fac-row"><span class="muted">'+fee.name+'</span><span style="font-weight:600;color:#EC9638">'+fmt(fee.value,cur)+'</span></div>';}).join('');
+var facSection=SL("Debt Facility Overview")+'<div class="grid2"><div class="fac-card" style="border-color:rgba(212,123,107,.25)"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px"><div><div class="fac-type" style="color:#D47B6B">Senior Loan</div><div class="fac-lender">'+f.senior.lender+'</div></div><div class="txt-right"><div class="small muted">Principal</div><div style="font-size:18px;font-weight:800;color:#D47B6B">'+fmt(f.senior.principal,cur)+'</div></div></div><div class="grid2" style="margin-bottom:14px;gap:8px"><div style="background:#F2F2F0;border-radius:8px;padding:9px 11px"><div class="small muted">Original Principal</div><div style="font-size:13px;font-weight:700;margin-top:2px">'+fmt(f.senior.principal,cur)+'</div></div><div style="background:rgba(212,123,107,.07);border-radius:8px;padding:9px 11px"><div class="small muted">Capitalised Principal</div><div style="font-size:13px;font-weight:700;color:#D47B6B;margin-top:2px">'+fmt(f.senior.capitalizedPrincipal,cur)+'</div></div></div>'+SL("Fees & Costs")+sfees+'</div><div class="fac-card" style="border-color:rgba(236,150,56,.25)"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px"><div><div class="fac-type" style="color:#EC9638">Mezzanine Loan</div><div class="fac-lender">'+f.major.lender+'</div></div><div class="txt-right"><div class="small muted">Principal</div><div style="font-size:18px;font-weight:800;color:#EC9638">'+fmt(f.major.principal,cur)+'</div></div></div><div class="grid2" style="margin-bottom:14px;gap:8px"><div style="background:#F2F2F0;border-radius:8px;padding:9px 11px"><div class="small muted">Actual Wire</div><div style="font-size:13px;font-weight:700;margin-top:2px">'+fmt(f.major.actualWire,cur)+'</div></div><div style="background:rgba(236,150,56,.07);border-radius:8px;padding:9px 11px"><div class="small muted">Target Return</div><div style="font-size:13px;font-weight:700;color:#EC9638;margin-top:2px">'+fmt(f.major.targetReturn,cur)+'</div></div></div><div style="background:#F8F8F6;border-radius:8px;padding:10px 12px;margin-bottom:12px"><div class="small muted mb1">Target Return - greater of:</div><div style="display:flex;gap:8px;align-items:center"><div style="flex:1;background:#F2F2F0;border-radius:6px;padding:7px 10px;text-align:center"><div class="small muted">20% IRR</div><div style="font-size:12px;font-weight:700;margin-top:2px">'+fmt(f.major.targetIRR,cur)+'</div></div><span class="muted">vs</span><div style="flex:1;background:rgba(236,150,56,.08);border-radius:6px;padding:7px 10px;text-align:center"><div class="small muted">2x Return</div><div style="font-size:12px;font-weight:700;color:#EC9638;margin-top:2px">'+fmt(f.major.target2x,cur)+'</div></div></div></div>'+SL("Fees")+mfees+'</div></div><div class="fac-total"><div><div style="font-size:10px;color:#5E5E5E;text-transform:uppercase;letter-spacing:.08em;margin-bottom:2px">Total Facility Liability</div><div class="small muted">Senior (capitalised) + Mezzanine target return</div></div><div class="txt-right"><div style="font-size:26px;font-weight:800;color:#D47B6B">'+fmt(f.totalLiability,cur)+'</div><div class="small muted mt1">Remaining aggregate return: '+fmt(f.remainingAggregateReturn,cur)+'</div></div></div>';
+return title+pos+rwSection+facSection;}
+
+function renderNav(){var n=document.getElementById("nav");n.innerHTML='<button class="nav-btn'+(page==="overview"?" active":"")+'" onclick="go(\'overview\')">&#9672; Overview</button><div class="nav-divider"></div>'+FUND_KEYS.map(function(k){var f=FUNDS[k],d=f.hasSubFunds?f.subFundMap.total:f.data,st=liqStatus(d),act=page===k,dotCol=st.cls==="b-healthy"?"#3C8A50":st.cls==="b-shortfall"?"#D47B6B":"#EC9638";return'<button class="nav-btn'+(act?" active":"")+'" onclick="go(\''+k+'\')" style="'+(act?'border-color:'+f.color+';background:'+f.color+'18;color:'+f.color:'')+'"><span class="nav-dot" style="background:'+dotCol+'"></span><span class="fund-tag">'+k+'</span>'+f.label+'</button>';}).join('');}
+
+function go(p){page=p;render();}
+function setSub(fk,sk){subState[fk]=sk;render();}
+function render(){renderNav();var pg=document.getElementById("pages");pg.innerHTML=page==="overview"?renderOverview():renderFund(page);}
+try {
+  render();
+} catch(e) {
+  document.getElementById('app').innerHTML =
+    '<div style="padding:40px;font-family:monospace;background:#fff;color:red;border-radius:8px;margin:20px">' +
+    '<b>JavaScript Error:</b><br><pre>' + e.stack + '</pre></div>';
+}
+</script>
+</body>
+</html>
